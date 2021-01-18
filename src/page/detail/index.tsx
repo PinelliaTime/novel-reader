@@ -1,10 +1,10 @@
 import React, { useEffect, useCallback, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { Toast } from 'antd-mobile';
-import { isEmpty, round } from 'lodash';
 
-import HttpList from '@/service/httpList';
 import SvgMode from '@/component/SvgMode';
+import { isEmpty } from '@/utils/universal';
+import { httpQueryCatalog, httpQueryChapter } from '@/service/bookQuery';
 
 import './index.scss';
 import {
@@ -54,8 +54,12 @@ function Detail(props: any) {
   // 查询章节目录
   const fetchCatalog = useCallback((book_id: string) => {
     (async () => {
-      const info = await HttpList.queryCatalog({ book_id });
-      setCatalog(info || []);
+      try {
+        const { data = [] } = await httpQueryCatalog({ book_id });
+        setCatalog(data);
+      } catch (error) {
+        console.log(error);
+      }
     })();
   }, []);
 
@@ -63,27 +67,29 @@ function Detail(props: any) {
   const queryChapter = useCallback(
     (bookId: string, chapterIndex: number, scrollHeight?: number) => {
       (async () => {
-        Toast.loading('数据请求中...', 30);
-        const info = await HttpList.queryChapter({
-          book_id: bookId,
-          chapter_index: chapterIndex
-        });
-        Toast.hide();
-        setReadInfoToLocal(bookId, {
-          bookId,
-          chapterIndex,
-          scrollHeight: scrollHeight || 0
-        });
-        if (info) {
-          document.title = info.bookName;
-          setBookContent(info || {});
-        }
-        if (scrollHeight) {
-          setTimeout(() => {
-            window.scrollTo(0, scrollHeight);
-          }, 50);
-        } else {
-          window.scrollTo(0, 0);
+        try {
+          const { data = {} } = await httpQueryChapter({
+            book_id: bookId,
+            chapter_index: chapterIndex
+          });
+          setReadInfoToLocal(bookId, {
+            bookId,
+            chapterIndex,
+            scrollHeight: scrollHeight || 0
+          });
+          if (data) {
+            document.title = data.bookName;
+            setBookContent(data);
+          }
+          if (scrollHeight) {
+            setTimeout(() => {
+              window.scrollTo(0, scrollHeight);
+            }, 16);
+          } else {
+            window.scrollTo(0, 0);
+          }
+        } catch (error) {
+          console.log(error);
         }
       })();
     },
@@ -155,7 +161,7 @@ function Detail(props: any) {
 
   // 返回书城
   const goBackBookCity = useCallback(() => {
-    props.history.push('/');
+    props.history.goBack();
   }, [props.history]);
 
   // 唤起/关闭 设置蒙板
@@ -277,6 +283,17 @@ function Detail(props: any) {
       }}
       className="book-detail"
     >
+      <div
+        className="book-detail-title"
+        style={{
+          backgroundColor: readSetting.isNight
+            ? '#111'
+            : readSetting.pageBackgroundColor,
+          color: readSetting.fontColor
+        }}
+      >
+        {bookContent.chapterTitle || ''}
+      </div>
       <h2 style={{ color: readSetting.fontColor }}>
         {bookContent.chapterTitle || ''}
       </h2>
@@ -352,8 +369,9 @@ function Detail(props: any) {
               <div style={{ flex: 1 }}>
                 当前进度：
                 {bookContent && bookContent.chapterIndex && !isEmpty(catalog)
-                  ? round(bookContent.chapterIndex / catalog.length, 4) + ' %'
-                  : '01 %'}
+                  ? (bookContent.chapterIndex / catalog.length).toFixed(4) +
+                    ' %'
+                  : '0 %'}
               </div>
               <div onClick={onNextPageClick}>下一章</div>
             </div>

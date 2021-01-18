@@ -13,8 +13,8 @@ function SetMode(props: IProps) {
 
   return (
     <div onClick={onClick} style={{ display: 'flex', flexDirection: 'column' }}>
-      <SvgMode width={18} height={18} name={name} color={color} />
-      <span style={{ marginTop: '5px', fontSize: '12px', color: color }}>
+      <SvgMode width={16} height={16} name={name} color={color} />
+      <span style={{ marginTop: '4px', fontSize: '10px', color: color }}>
         {title}
       </span>
     </div>

@@ -5,7 +5,12 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
-require('./iconfont')
+require('./iconfont');
+
+if (process.env.NODE_ENV !== 'production') {
+  const Vconsole = require('vconsole');
+  new Vconsole();
+}
 
 ReactDOM.render(
   <React.StrictMode>

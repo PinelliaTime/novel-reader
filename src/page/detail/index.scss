@@ -1,7 +1,20 @@
 .book-detail {
   min-height: 100vh;
   background-color: #f8f0eb;
-  padding: 10px;
+  padding: 45px 10px 10px 10px;
+
+  &-title {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 44px;
+    padding: 0 10px;
+    display: flex;
+    align-items: center;
+    font-size: 15px;
+    color: rgba(0, 0, 0, 0.4);
+  }
 
   &-content {
     white-space: pre-wrap;
@@ -37,7 +50,7 @@
     z-index: 99;
 
     &-header {
-      height: 50px;
+      height: 44px;
       padding-left: 15px;
       display: flex;
       align-items: center;
@@ -130,7 +143,7 @@
       }
 
       &-set {
-        height: 60px;
+        height: 55px;
         display: flex;
         align-items: flex-start;
         justify-content: space-around;
@@ -157,7 +170,7 @@
 
     &-section {
       width: 80vw;
-      height: 100%;
+      // height: 100%;
       background-color: #fff;
 
       &-header {
@@ -172,11 +185,12 @@
 
       &-scroll {
         height: 100%;
+        padding-bottom: 45px;
         overflow-y: scroll;
 
         div {
           height: 45px;
-          padding: 0 8px;
+          padding: 0 10px;
           display: flex;
           align-items: center;
           font-size: 13px;

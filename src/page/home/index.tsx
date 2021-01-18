@@ -1,9 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Toast } from 'antd-mobile';
 
-import HttpList from '@/service/httpList';
 import SvgMode from '@/component/SvgMode';
+import { httpQueryBooks } from '@/service/bookQuery';
 
 import './index.scss';
 
@@ -26,10 +25,14 @@ export default function Home() {
   useEffect(() => {
     document.title = '林区';
     async function fetchData() {
-      Toast.loading('数据请求中...', 30);
-      const info = await HttpList.queryBooks({});
-      Toast.hide();
-      setData(info?.resultList || []);
+      try {
+        const { data } = await httpQueryBooks();
+        if (data) {
+          setData(data?.resultList || []);
+        }
+      } catch (error) {
+        console.log(error);
+      }
     }
     fetchData();
   }, []);
